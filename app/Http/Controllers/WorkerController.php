@@ -58,8 +58,6 @@ class WorkerController extends Controller
 					$data[] = $tmp;
 				}
 
-			//	dump($workers);
-
 				array_shift($data);
 
 				Worker::insert($data);
@@ -74,11 +72,44 @@ class WorkerController extends Controller
 	public function export()
 	{
 		$workers = Worker::all();
-	//	dump($workers);
-		
-		// todo
-		
-		return redirect()->route('view');
+
+		$spreadsheet = new Spreadsheet();
+
+		$spreadsheet->getProperties()->setCreator('R1KO')
+			->setLastModifiedBy('R1KO')
+			->setTitle('Office 2007 XLSX Test Document')
+			->setSubject('Office 2007 XLSX Test Document')
+			->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
+			->setKeywords('office 2007 openxml php')
+			->setCategory('Test result file');
+
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$workers_array[] = ['Фамимлия',
+							'Имя',
+							'Отчество',
+							'Год рождения',
+							'Должность',
+							'Зп в год.'];
+
+		foreach($workers as $worker) {
+			$tmp = $worker->toArray();
+			unset($tmp['id']);
+			$workers_array[] = array_values($tmp);
+		}
+
+		$spreadsheet->getActiveSheet()
+			->fromArray(
+				$workers_array,  // Массив
+				NULL,
+				'A1'         // Ячейка с которой начинается заполнение
+			);
+
+		$writer = new Xlsx($spreadsheet);
+		$pathToFile = 'export.xlsx';
+		$writer->save($pathToFile);
+
+		return response()->download($pathToFile)->deleteFileAfterSend(true);
 	}
 
 	public function create(Request $request)
