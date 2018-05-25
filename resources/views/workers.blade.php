@@ -14,4 +14,37 @@
 			</form>
 		</div>
 	</div>
+	@if($workers && count($workers))
+		<div class="row">
+			<div class="col-md-10 offset-md-1">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Фамилия</th>
+							<th>Имя</th>
+							<th>Отчество</th>
+							<th>Год рождения</th>
+							<th>Должность</th>
+							<th>Зп в год.</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($workers as $worker)
+						<tr id="worker_{{ $worker->id }}" >
+							<td>{{ $worker->last_name }}</td>
+							<td>{{ $worker->first_name }}</td>
+							<td>{{ $worker->patronymic }}</td>
+							<td>{{ $worker->birth_year }}</td>
+							<td>{{ $worker->post }}</td>
+							<td>{{ $worker->wages_per_year }}</td>
+						</tr>
+						@endforeach
+					</tbody>
+				</table>
+				<nav class="text-md-center">
+					{{ $workers->links() }}
+				</nav>
+			</div>
+		</div>
+	@endif
 @endsection
