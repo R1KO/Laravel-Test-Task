@@ -8,6 +8,8 @@ use App\Worker;
 class WorkerController extends Controller
 {
 	const WORKERS_TO_PAGE = 20;
+	const REGEX = '/^[a-zA-Zа-яА-Я\'][a-zA-Zа-яА-Я-\' ]+[a-zA-Zа-яА-Я\']?$/u';
+	const REGEX2 = '/^[a-zA-Zа-яА-Я]+$/ui';
 
 	public function view()
 	{
@@ -31,8 +33,39 @@ class WorkerController extends Controller
 
 	public function create(Request $request)
 	{
-		
-		
+		$this->validate($request, [
+            'last_name' => [
+                'required',
+                'between:2,128',
+                'regex:'.self::REGEX,
+            ],
+            'first_name' => [
+                'required',
+                'between:2,128',
+                'regex:'.self::REGEX,
+            ],
+            'patronymic' => [
+                'required',
+                'between:2,128',
+                'regex:'.self::REGEX2,
+            ],
+            'birth_year' => [
+                'required',
+                'min:1900',
+                'numeric',
+            ],
+            'post' => [
+                'required',
+                'between:4,128',
+            ],
+            'wages_per_year' => [
+                'required'
+            ],
+        ]);
+
+		$worker = new Worker($request->all());
+        $worker->save();
+
 		return redirect()->route('view');
 	}
 
