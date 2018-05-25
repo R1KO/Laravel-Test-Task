@@ -78,8 +78,8 @@ class WorkerController extends Controller
 
 	public function delete(Worker $worker)
 	{
-		
-		
+		$worker->delete();
+
 		return redirect()->route('view');
 	}
 }

@@ -26,18 +26,26 @@
 							<th>Год рождения</th>
 							<th>Должность</th>
 							<th>Зп в год.</th>
+                            <th>Действия</th>
 						</tr>
 					</thead>
 					<tbody>
 						@foreach($workers as $worker)
-						<tr id="worker_{{ $worker->id }}" >
-							<td>{{ $worker->last_name }}</td>
-							<td>{{ $worker->first_name }}</td>
-							<td>{{ $worker->patronymic }}</td>
-							<td>{{ $worker->birth_year }}</td>
-							<td>{{ $worker->post }}</td>
-							<td>{{ $worker->wages_per_year }}</td>
-						</tr>
+							<tr id="worker_{{ $worker->id }}" >
+								<td name="last_name">{{ $worker->last_name }}</td>
+								<td name="first_name">{{ $worker->first_name }}</td>
+								<td name="patronymic">{{ $worker->patronymic }}</td>
+								<td name="birth_year">{{ $worker->birth_year }}</td>
+								<td name="post">{{ $worker->post }}</td>
+								<td name="wages_per_year">{{ $worker->wages_per_year }}</td>
+
+								<td style="text-align: center;">
+									<div class="btn-group" style="display: inline-block;">
+										<a class="open-DelWorker" data-id="{{ $worker->id }}"
+											data-toggle="modal" href="#DelWorkerModal" title="Удалить"><i class="fas fa-trash-alt" style="color: black;"></i></a>
+									</div>
+								</td>
+							</tr>
 						@endforeach
 					</tbody>
 				</table>
@@ -94,4 +102,58 @@
 			</div>
 		</div>
 	</form>
+	
+	<form action="{{ route('worker.delete', ['worker' => 0]) }}" id="form_delete_worker" method="post" accept-charset="UTF-8">
+		{{ csrf_field() }}
+		<input name="_method" type="hidden" value="DELETE">
+		<!-- Modal -->
+		<div class="modal fade" id="DelWorkerModal" tabindex="-1" role="dialog" aria-labelledby="DelWorkerModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Удалить работника</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						Вы действительно хотите удалить работника <b id="del_full_name"></b> ?
+					</div>
+					<div class="modal-footer" style="display: block;">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+						<button type="submit" class="btn btn-danger float-right">Удалить</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">
+		$(document).on("click", "a.open-DelWorker", function () {
+			var nID = $(this).data('id');
+		
+			var action = '{{ route('worker.delete', ['worker' => 0]) }}';
+		
+			action = action.substr(0, action.lastIndexOf('/')+1);
+		
+			$('#form_delete_worker').attr('action', action+nID);
+		
+			var tds = $('#worker_'+nID).find("td");
+		var last_name, first_name, patronymic;
+		
+		$(tds).each(function(i, elem) {
+		if($(this).attr('name') == 'last_name') {
+		last_name = $(this).html();
+		}
+		else if($(this).attr('name') == 'first_name') {
+		first_name = $(this).html();
+		}
+		else if($(this).attr('name') == 'patronymic') {
+		patronymic = $(this).html();
+		}
+		});
+		
+		var fullname = last_name + ' ' + first_name + ' ' + patronymic;
+			$('#del_full_name').html(fullname);
+		});
+	</script>
 @endsection
