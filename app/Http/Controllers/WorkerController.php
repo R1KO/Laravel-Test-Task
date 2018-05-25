@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Worker;
 use File;
+use PhpOffice\PhpSpreadsheet\{Spreadsheet, Writer\Xlsx, IOFactory};
 
 class WorkerController extends Controller
 {
@@ -31,8 +32,38 @@ class WorkerController extends Controller
  
                 $path = $request->file->getRealPath();
 				
-				// todo
-		
+				$path = $request->file->getRealPath();
+				
+				$spreadsheet = IOFactory::load($path);
+				
+				$worksheet = $spreadsheet->getActiveSheet();
+
+				$columns = [
+							'last_name',
+							'first_name',
+							'patronymic',
+							'birth_year',
+							'post',
+							'wages_per_year'
+						];
+
+				foreach ($worksheet->getRowIterator() as $row) {
+					$cellIterator = $row->getCellIterator();
+					$cellIterator->setIterateOnlyExistingCells(FALSE);
+					$i = 0;
+					$tmp = [];
+					foreach ($cellIterator as $cell) {
+						$tmp[$columns[$i++]] = $cell->getValue();
+					}
+					$data[] = $tmp;
+				}
+
+			//	dump($workers);
+
+				array_shift($data);
+
+				Worker::insert($data);
+
 				session()->flash('flash_message', 'Импорт прошел успешно!');
 			}
 		}
