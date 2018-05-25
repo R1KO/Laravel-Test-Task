@@ -33,6 +33,32 @@ class WorkerController extends Controller
 
 	public function create(Request $request)
 	{
+		$this->validateParams($request);
+
+		$worker = new Worker($request->all());
+        $worker->save();
+
+		return redirect()->route('view');
+	}
+
+	public function store(Worker $worker, Request $request)
+	{
+		$this->validateParams($request);
+		$worker->fill($request->all());
+        $worker->save();
+		
+		return redirect()->route('view');
+	}
+
+	public function delete(Worker $worker)
+	{
+		$worker->delete();
+
+		return redirect()->route('view');
+	}
+	
+	private function validateParams(Request $request)
+	{
 		$this->validate($request, [
             'last_name' => [
                 'required',
@@ -62,24 +88,5 @@ class WorkerController extends Controller
                 'required'
             ],
         ]);
-
-		$worker = new Worker($request->all());
-        $worker->save();
-
-		return redirect()->route('view');
-	}
-
-	public function store(Worker $worker, Request $request)
-	{
-		
-		
-		return redirect()->route('view');
-	}
-
-	public function delete(Worker $worker)
-	{
-		$worker->delete();
-
-		return redirect()->route('view');
 	}
 }

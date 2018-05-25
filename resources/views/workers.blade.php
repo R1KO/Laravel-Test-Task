@@ -41,6 +41,8 @@
 
 								<td style="text-align: center;">
 									<div class="btn-group" style="display: inline-block;">
+										<a class="open-EditWorker" data-id="{{ $worker->id }}"
+											data-toggle="modal" href="#EditWorkerModal" title="Редактировать"><i class="fas fa-pencil-alt" style="color: black;"></i></a>
 										<a class="open-DelWorker" data-id="{{ $worker->id }}"
 											data-toggle="modal" href="#DelWorkerModal" title="Удалить"><i class="fas fa-trash-alt" style="color: black;"></i></a>
 									</div>
@@ -154,6 +156,93 @@
 		
 		var fullname = last_name + ' ' + first_name + ' ' + patronymic;
 			$('#del_full_name').html(fullname);
+		});
+	</script>
+	
+	<form action="{{ route('worker.save', ['worker' => 0]) }}" id="form_save_worker" method="post" accept-charset="UTF-8">
+		{{ csrf_field() }}
+		<input name="_method" type="hidden" value="PUT">
+		<!-- Modal -->
+		<div class="modal fade" id="EditWorkerModal" tabindex="-1" role="dialog" aria-labelledby="EditWorkerModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Редактирование работника</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="last_name">Фамилия</label>
+							<input type="text" class="form-control" id="edit_last_name" name="last_name">
+						</div>
+						<div class="form-group">
+							<label for="first_name">Имя</label>
+							<input type="text" class="form-control" id="edit_first_name" name="first_name">
+						</div>
+						<div class="form-group">
+							<label for="patronymic">Отчество</label>
+							<input type="text" class="form-control" id="edit_patronymic" name="patronymic">
+						</div>
+						<div class="form-group">
+							<label for="birth_year">Год рождения</label>
+							<input type="text" class="form-control" id="edit_birth_year" name="birth_year">
+						</div>
+						<div class="form-group">
+							<label for="post">Должность</label>
+							<input type="text" class="form-control" id="edit_post" name="post">
+						</div>
+						<div class="form-group">
+							<label for="wages_per_year">Зп в год.</label>
+							<input type="text" class="form-control" id="edit_wages_per_year" name="wages_per_year">
+						</div>
+					</div>
+					<div class="modal-footer" style="display: block;">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+						<button type="submit" class="btn btn-success float-right">Сохранить</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">
+		$(document).on("click", "a.open-EditWorker", function () {
+			var nID = $(this).data('id');
+			var action = '{{ route('worker.save', ['worker' => 0]) }}';
+			action = action.substr(0, action.lastIndexOf('/')+1);
+
+			$('#form_save_worker').attr('action', action+nID);
+
+			var tds = $('#worker_'+nID).find("td");
+			var last_name, first_name, patronymic, birth_year, post, wages_per_year;
+			$(tds).each(function(i, elem) {
+				if($(this).attr('name') == 'last_name') {
+					last_name = $(this).html();
+				}
+				else if($(this).attr('name') == 'first_name') {
+					first_name = $(this).html();
+				}
+				else if($(this).attr('name') == 'patronymic') {
+					patronymic = $(this).html();
+				}
+				else if($(this).attr('name') == 'birth_year') {
+					birth_year = $(this).html();
+				}
+				else if($(this).attr('name') == 'post') {
+					post = $(this).html();
+				}
+				else if($(this).attr('name') == 'wages_per_year') {
+					wages_per_year = $(this).html();
+				}
+			});
+		
+			$('#edit_last_name').val(last_name);
+			$('#edit_first_name').val(first_name);
+			$('#edit_patronymic').val(patronymic);
+			$('#edit_birth_year').val(birth_year);
+			$('#edit_post').val(post);
+			$('#edit_wages_per_year').val(wages_per_year);
 		});
 	</script>
 @endsection
