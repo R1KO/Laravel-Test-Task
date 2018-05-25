@@ -1,6 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
+	@if(count($errors) > 0)
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2 text-center">
+			<div class="alert alert-danger" role="alert">
+				<ul>
+					@foreach($errors->all() as $error)
+					<li>{{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		</div>
+	</div>
+	@endif
+	@if (Session::has('flash_message'))
+	<div class="row">
+		<div class="col-md-8 offset-md-2 text-center">
+			<div class="alert alert-success" role="alert">
+				{!! session('flash_message') !!}
+			</div>
+		</div>
+	</div>
+	@endif
+	<script type="text/javascript">
+		$('div.alert').delay(2500).slideUp(200);
+	</script>
 	<div class="row">
 		<div class="col-md-8 offset-md-2 text-center">
 			<form class="form-inline" action="{{ route('excel.import') }}" method="post" enctype="multipart/form-data">

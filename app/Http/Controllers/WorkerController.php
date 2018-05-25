@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Worker;
+use File;
 
 class WorkerController extends Controller
 {
@@ -19,14 +20,32 @@ class WorkerController extends Controller
 
 	public function import(Request $request)
 	{
+		$this->validate($request, array(
+            'file'      => 'required'
+        ));
 		
+		if($request->hasFile('file')) {
+			$extension = $request->file->extension();
+
+			if ($extension == "xlsx" || $extension == "xls") {
+ 
+                $path = $request->file->getRealPath();
+				
+				// todo
+		
+				session()->flash('flash_message', 'Импорт прошел успешно!');
+			}
+		}
 		
 		return redirect()->route('view');
 	}
 
 	public function export()
 	{
+		$workers = Worker::all();
+	//	dump($workers);
 		
+		// todo
 		
 		return redirect()->route('view');
 	}
@@ -37,6 +56,8 @@ class WorkerController extends Controller
 
 		$worker = new Worker($request->all());
         $worker->save();
+		
+		session()->flash('flash_message', 'Работник <b>'.$request->last_name.' '.$request->first_name.' '.$request->patronymic.'</b> успешно добавлен!');
 
 		return redirect()->route('view');
 	}
@@ -47,11 +68,15 @@ class WorkerController extends Controller
 		$worker->fill($request->all());
         $worker->save();
 		
+		session()->flash('flash_message', 'Работник <b>'.$request->last_name.' '.$request->first_name.' '.$request->patronymic.'</b> успешно изменен!');
+
 		return redirect()->route('view');
 	}
 
 	public function delete(Worker $worker)
 	{
+		session()->flash('flash_message', 'Работник <b>'.$worker->last_name.' '.$worker->first_name.' '.$worker->patronymic.'</b> успешно удален!');
+
 		$worker->delete();
 
 		return redirect()->route('view');
